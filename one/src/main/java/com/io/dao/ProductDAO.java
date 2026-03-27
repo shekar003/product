@@ -10,5 +10,4 @@ public interface ProductDAO {
 
 public List	getAllProducts();
 	
-
-}
+} 
