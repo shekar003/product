@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.io.entity.Product;
 import com.io.entity.ProductDTO;
-import com.io.entity.ProductMapper;
 import com.io.service.ProductService;
 import com.io.validations.APIResponse;
 import com.io.validations.NoProductFoundException;
@@ -58,16 +57,10 @@ public class ProductController {
 		
 		ResponseEntity<Page> responseEntity;
 		Page<Product> page = productService.getAllProdcts(pageable);
-		
-		
-
 		if (page.isEmpty()) {
-
-			String message = "No records found ";
-
-			responseEntity = new ResponseEntity(message, HttpStatus.NOT_FOUND);
+		responseEntity = new ResponseEntity("No records found ", HttpStatus.NOT_FOUND);
 		} else {
-			responseEntity = new ResponseEntity(page, HttpStatus.OK);
+		responseEntity = new ResponseEntity(page, HttpStatus.OK);
 		}
 		return responseEntity;
 
@@ -101,7 +94,7 @@ public class ProductController {
 		log.info("ProductController : getByProductbyId execution starts");
 
 		Product product = productService.findById(id)
-				.orElseThrow(() -> new NoProductFoundException("Product not found", id));
+				.orElseThrow(() -> new NoProductFoundException("Product not found with Id : " + id));
 		log.info("ProductController : getByProductbyId execution ends");
 
 		return ResponseEntity.ok(product);
@@ -167,14 +160,14 @@ public class ProductController {
 	}
 
 	
-	  @GetMapping("/getProductsByName")
-	  public ResponseEntity<ProductDTO> getProductsByName(@RequestParam @Valid String name) {
+	  @PostMapping("/getProductsByName")
+	  public ResponseEntity<List<ProductDTO>> getProductsByName(@RequestBody ProductDTO productDTO) {
 	    
-		  ProductDTO productDTO = productService.getProductByName(name);
+		  List<ProductDTO> listOfproductDTO = productService.getProductByName(productDTO);
 	  
 	 
 	  log.info("ProductController : getProductByName execution ends");
-	  return ResponseEntity.ok(productDTO); }
+	  return ResponseEntity.ok(listOfproductDTO); }
 	  
 	 
 	@PostMapping("/findProductWithsameName")
@@ -184,7 +177,7 @@ public class ProductController {
 
 		page.getContent().forEach(p -> System.out.print(p.getQuantity()));
 
-		APIResponse<List<Product>> apiResponse = new APIResponse();
+		APIResponse<List<Product>> apiResponse = new APIResponse<List<Product>>();
 
 		if (page.isEmpty()) {
 			apiResponse.setMessage("No P F with Name : " + name);

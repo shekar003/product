@@ -36,8 +36,6 @@
 			</fileNamePattern>
 		</rollingPolicy>
 	</appender>
-
-
 	<!-- DAO LOG -->
 	<appender name="DAO_FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -66,6 +64,7 @@
 	<!-- SERVICE PACKAGE -->
 	<logger name="com.io.service" level="DEBUG" additivity="false">
 		<appender-ref ref="SERVICE_FILE" />
+		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="SPLUNK" />
 	</logger>
 
@@ -73,12 +72,14 @@
 	<logger name="com.io.controllers" level="DEBUG"
 		additivity="false">
 		<appender-ref ref="CONTROLLER_FILE" />
+		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="SPLUNK" />
 	</logger>
 
 	<!-- DAO PACKAGE -->
 	<logger name="com.io.dao" level="DEBUG" additivity="false">
 		<appender-ref ref="DAO_FILE" />
+		<appender-ref ref="CONSOLE" />
 		<appender-ref ref="SPLUNK" />
 	</logger>
 

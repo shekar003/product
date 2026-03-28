@@ -31,3 +31,13 @@ build/
 
 ### VS Code ###
 .vscode/
+
+*.log
+
+*.gitignore
+
+*. log
+
+
+controller.log
+service.log

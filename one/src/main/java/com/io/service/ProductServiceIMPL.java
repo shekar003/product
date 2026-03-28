@@ -1,20 +1,24 @@
 package com.io.service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.io.dao.ProductRepository;
 import com.io.entity.Product;
 import com.io.entity.ProductDTO;
-import com.io.entity.ProductMapper;
+import com.io.mappers.ProductMapper;
 import com.io.validations.NoProductFoundException;
 
 /**
@@ -29,13 +33,12 @@ public class ProductServiceIMPL implements ProductService {
 
 	private static final Logger log = LoggerFactory.getLogger(ProductServiceIMPL.class);
 
-	 
-	 //private ProductMapper productMapper;
+	@Autowired
+	private ProductMapper productMapper;
 
-	 @Autowired
-	 private ProductRepository productRepository;
+	@Autowired
+	private ProductRepository productRepository;
 
-	
 	/**
 	 * createProduct method create a new product in Database
 	 * 
@@ -56,7 +59,7 @@ public class ProductServiceIMPL implements ProductService {
 		log.info("ProductServiceIMPL : getProductbyId execution starts");
 
 		return productRepository.findById(id)
-				.orElseThrow(() -> new NoProductFoundException("No Product Found with Id = ", id));
+				.orElseThrow(() -> new NoProductFoundException("No Product Found with Id = " + id));
 	}
 
 	/**
@@ -77,6 +80,7 @@ public class ProductServiceIMPL implements ProductService {
 	 * 
 	 * @param not applicable
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public Page getAllProdcts(org.springframework.data.domain.Pageable pageable) {
 		log.debug("FrOM IMPL SERVIECE");
@@ -143,15 +147,18 @@ public class ProductServiceIMPL implements ProductService {
 	}
 
 	@Override
-	public ProductDTO getProductByName(String name) {
+	public List<ProductDTO> getProductByName(ProductDTO productDTO) {
 
-		log.info("NAME : " + name);
-
-		Product product = productRepository.findByName(name);
-
-		// ProductDTO productDTO = productMapper.productToProductDTO(product);
-
-		return null;
+		List<ProductDTO> listOfProductDTO = Collections.emptyList();
+		log.info("NAME : {}", productDTO.getName());
+		List<Product> listOfProduct = productRepository.findByNameAndDeletedFalse(productDTO.getName());
+		if (!listOfProduct.isEmpty()) {
+			listOfProductDTO = listOfProduct.stream().map(productMapper::productToProductDTO).toList();
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No P Found With : " + productDTO.getName());
+		}
+		listOfProduct.forEach(product -> log.info(" ID : " + product.getId()));
+		return listOfProductDTO;
 	}
 
 	/**
@@ -161,10 +168,14 @@ public class ProductServiceIMPL implements ProductService {
 	 */
 	@Override
 	public Product partialUpdateProduct(Product product) {
-		Product existingProduct = productRepository.findById(product.getId()).get();
-		existingProduct.setName(product.getName());
-		existingProduct.setPrice(product.getPrice());
-		existingProduct.setCategory(product.getCategory());
+		Product existingProduct = productRepository.findById(product.getId())
+				.orElseThrow(() -> new NoProductFoundException("No product found with Id : " + product.getId()));
+		
+		if(product.getName()!=null) {existingProduct.setName(product.getName());}
+		if(product.getPrice()!=null) {existingProduct.setPrice(product.getPrice());}
+		if(product.getCategory()!=null) {existingProduct.setCategory(product.getCategory());}
+		if(product.getQuantity()!=null) {existingProduct.setQuantity(product.getQuantity());}
+		
 		Product updatedProduct = productRepository.save(existingProduct);
 
 		return updatedProduct;
@@ -176,9 +187,9 @@ public class ProductServiceIMPL implements ProductService {
 
 	}
 
-	public Page findProductWithsameName(String name, Pageable pageable) {
+	public Page<Product> findProductWithsameName(String name, Pageable pageable) {
 
-		Page page = productRepository.findProductWithsameName(name, pageable);
+		Page<Product> page = productRepository.findProductWithsameName(name, pageable);
 
 		return page;
 	}
