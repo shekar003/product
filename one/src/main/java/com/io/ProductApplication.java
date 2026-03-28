@@ -7,8 +7,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * 
  * @author Shekar
  */
-@SpringBootApplication(scanBasePackages = "com.io.*")
+@SpringBootApplication(scanBasePackages = "com.io")
 public class ProductApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(ProductApplication.class, args);}
+		SpringApplication.run(ProductApplication.class, args);
+		
+	}
 }

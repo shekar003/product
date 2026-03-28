@@ -22,19 +22,11 @@ public class NoProductFoundException extends RuntimeException {
 	public NoProductFoundException() {
 	}
 
-	public NoProductFoundException(String message, Long id) {
+	public NoProductFoundException(String message) {
 		super();
 		this.message = message;
-		this.id=id;
 
 	}
-	public NoProductFoundException(String message, String name) {
-		super();
-		this.message = message;
-		this.name=name;
-
-	}
-
 	public String getMessage() {
 		return message;
 	}

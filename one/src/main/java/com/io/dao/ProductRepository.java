@@ -13,8 +13,9 @@ import com.io.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 	
 	
-	Product findByName(String name);
+	List<Product> findByNameAndDeletedFalse(String name);
 	
+	@Override
 	Page<Product> findAll(Pageable pageable);
 	
     Product findByPrice(Double price);

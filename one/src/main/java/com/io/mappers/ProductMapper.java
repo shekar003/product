@@ -1,7 +1,9 @@
-package com.io.entity;
+package com.io.mappers;
 
 import org.mapstruct.Mapper;
-import org.springframework.stereotype.Component;
+
+import com.io.entity.Product;
+import com.io.entity.ProductDTO;
 
 
 @Mapper(componentModel = "spring")

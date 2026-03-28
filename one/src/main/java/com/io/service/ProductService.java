@@ -37,7 +37,7 @@ public interface ProductService {
 
 	public Product partialUpdateProduct(Product product);
 
-	public ProductDTO getProductByName(String name);
+	public List<ProductDTO> getProductByName(ProductDTO productDTO);
 
 	public Optional<Product> findById(Long id);
 
