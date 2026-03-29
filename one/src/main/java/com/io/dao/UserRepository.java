@@ -10,6 +10,9 @@ import jakarta.persistence.Id;
 
 public interface UserRepository extends JpaRepository<User, Id> {
     Optional<User> findByUsername(String username);
-
+    
+    @SuppressWarnings("unchecked")
+	@Override
+	User save(User user);
 
 }

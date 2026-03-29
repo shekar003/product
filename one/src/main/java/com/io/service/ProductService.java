@@ -35,7 +35,7 @@ public interface ProductService {
 
 	public Product getProductsByPrice(Double price);
 
-	public Product partialUpdateProduct(Product product);
+	public ProductDTO partialUpdateProduct(Long id, ProductDTO productDTO);
 
 	public List<ProductDTO> getProductByName(ProductDTO productDTO);
 
