@@ -167,19 +167,19 @@ public class ProductServiceIMPL implements ProductService {
 	 * @param Long product id
 	 */
 	@Override
-	public Product partialUpdateProduct(Product product) {
-		Product existingProduct = productRepository.findById(product.getId())
-				.orElseThrow(() -> new NoProductFoundException("No product found with Id : " + product.getId()));
+	public ProductDTO partialUpdateProduct(Long id, ProductDTO productDTO) {
+		Product existingProduct = productRepository.findById(id)
+				.orElseThrow(() -> new NoProductFoundException("No product found with Id : " + productDTO.getId()));
 		
-		if(product.getName()!=null) {existingProduct.setName(product.getName());}
-		if(product.getPrice()!=null) {existingProduct.setPrice(product.getPrice());}
-		if(product.getCategory()!=null) {existingProduct.setCategory(product.getCategory());}
-		if(product.getQuantity()!=null) {existingProduct.setQuantity(product.getQuantity());}
+		if(productDTO.getName()!=null) {existingProduct.setName(productDTO.getName());}
+		if(productDTO.getPrice()!=null) {existingProduct.setPrice(productDTO.getPrice());}
+		if(productDTO.getCategory()!=null) {existingProduct.setCategory(productDTO.getCategory());}
+		if(productDTO.getQuantity()!=null) {existingProduct.setQuantity(productDTO.getQuantity());}
 		
 		Product updatedProduct = productRepository.save(existingProduct);
 
-		return updatedProduct;
-	}
+		return productMapper.productToProductDTO(updatedProduct);
+				}
 
 	@Override
 	public Optional<Product> findById(Long id) {

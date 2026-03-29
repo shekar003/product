@@ -2,6 +2,7 @@ package com.io;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 /**
  * This the main Spring boot application configuration class
  * 

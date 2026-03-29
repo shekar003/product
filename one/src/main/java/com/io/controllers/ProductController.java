@@ -139,13 +139,13 @@ public class ProductController {
 	 */
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<Product> partialUpdateProduct(@PathVariable Long id, @Valid @RequestBody Product product) {
-		log.info("ProductController : partialUpdateProduct execution starts");
+	public ResponseEntity<ProductDTO> partialUpdateProduct(@PathVariable Long id, @Valid @RequestBody ProductDTO productDTO) {
+		log.info("ProductController : partialUpdateProduct execution starts : " + id);
 
-		Product savedproduct = productService.partialUpdateProduct(product);
+		ProductDTO savedProductDTO = productService.partialUpdateProduct(id,productDTO);
 		log.info("ProductController : partialUpdateProduct execution ends");
 
-		return new ResponseEntity<Product>(savedproduct, HttpStatus.CREATED);
+		return ResponseEntity.ok(savedProductDTO);
 
 	}
 

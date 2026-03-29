@@ -1,38 +1,55 @@
 package com.io.security;
 
-//@Configuration
-//@EnableWebSecurity
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.io.jwt.JwtFilter;
+
+@Configuration
+@EnableWebSecurity
 public class ProductSpringSecurity {
-	
-	
-	/*
-	
-	 * @Bean SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity)
-	 * throws Exception { httpSecurity.authorizeHttpRequests(auth ->
-	 * auth.requestMatchers("/
-	 **").permitAll().anyRequest().authenticated()) // All other requests require authentication
 
-	.csrf(csrfConfig-> // Disable CSRF for simplicity
-	csrfConfig.disable()).sessionManagement(sessionConfig-> // Disable JSESSIONID for simplicity, not recommended for
-															// production
-	sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+	@Autowired
+	private JwtFilter jwtFilter;
 
-	httpSecurity.authorizeHttpRequests(registry->
-	{
-
-		registry.requestMatchers("/home", "/register/**").permitAll();
-		registry.requestMatchers("/admin/**").hasRole("Admin");
-
-		registry.anyRequest().authenticated();
-
-	});
-
-	return httpSecurity.build(); // when you add build this throws an exception
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
 	}
 
-	// Password Encoding
 	@Bean
-	PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}*/
+	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+
+		httpSecurity.csrf(csr -> csr.disable())
+				.authorizeHttpRequests(auth -> auth.requestMatchers("/authcontroller/**").permitAll());
+
+		//httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+		return httpSecurity.build();
+		
+
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
+			PasswordEncoder passwordEncoder) throws Exception {
+		DaoAuthenticationProvider daoAuthenticationManager = new DaoAuthenticationProvider();
+		daoAuthenticationManager.setUserDetailsService(userDetailsService);
+		daoAuthenticationManager.setPasswordEncoder(passwordEncoder);
+		// new AuthenticationConfiguration().getAuthenticationManager();
+		return new ProviderManager(daoAuthenticationManager);
+
+	}
+
 }
