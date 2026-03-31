@@ -1,9 +1,12 @@
 package com.io.controllers;
 
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.io.entity.User;
 
 
 @RestController
@@ -19,11 +22,16 @@ public class OAuthController {
 	}
 	
 	@GetMapping("/two")
-	public String two(OAuth2AuthenticationToken token) {
-		System.out.println("TWO");
+	public String two() {
+		
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		User user = (User) auth.getPrincipal();
+	
+		System.out.println("TWO" +user.getUsername() +" : "+user.getAuthorities());
 
 		
-		return "private" +token.getPrincipal().getName();
+		return "private" +user.getUsername();
 	}
 
 }
