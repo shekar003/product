@@ -31,7 +31,7 @@ public class OAuthController {
 		System.out.println("TWO" +user.getUsername() +" : "+user.getAuthorities());
 
 		
-		return "private" +user.getUsername();
+		return user.getUsername();
 	}
 
 }
