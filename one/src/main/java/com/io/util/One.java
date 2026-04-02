@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class One {
-
+	public String IDD;
+	public String ID;
 	public static void main(String[] args) {
 
 		/*
