@@ -6,7 +6,6 @@ import java.util.Map;
 public class One {
 	public String IDD;
 	public String ID;
-	public Integer Intt;
 	public static void main(String[] args) {
 
 		/*
