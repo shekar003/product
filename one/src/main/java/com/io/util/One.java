@@ -6,6 +6,8 @@ import java.util.Map;
 
 public class One {
 
+	public String IDD;
+
 	public static void main(String[] args) {
 
 		String s = "Yah oogo oGleI nd iA";
