@@ -1,0 +1,239 @@
+package com.io.service;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.io.dao.ProductRepository;
+import com.io.entity.Product;
+import com.io.entity.ProductDTO;
+import com.io.mappers.ProductMapper;
+import com.io.validations.NoProductFoundException;
+
+/**
+ * This Service class where this acts as bridge between Controller and
+ * Repository
+ * 
+ * @author Shekar
+ */
+
+@Service
+public class ProductServiceIMPL implements ProductService {
+
+	private static final Logger log = LoggerFactory.getLogger(ProductServiceIMPL.class);
+
+	@Autowired
+	private ProductMapper productMapper;
+
+	@Autowired
+	private ProductRepository productRepository;
+
+	/**
+	 * createProduct method create a new product in Database
+	 * 
+	 * @param Product
+	 */
+	@Override
+	public Product createProduct(Product product) {
+		return productRepository.save(product);
+	}
+
+	/**
+	 * getByProductbyId method is used to fetch product details with ID
+	 * 
+	 * @param Long product id
+	 */
+	@Override
+	public Product getProductbyId(Long id) {
+		log.info("ProductServiceIMPL : getProductbyId execution starts");
+
+		return productRepository.findById(id)
+				.orElseThrow(() -> new NoProductFoundException("No Product Found with Id = " + id));
+	}
+
+	/**
+	 * getAllProdcts method fetches all the product available in Database
+	 * 
+	 * @param not applicable
+	 */
+	@Override
+	public List<Product> getAllProdcts() {
+		log.info("ProductServiceIMPL : getAllProdcts execution starts");
+
+		return (List<Product>) productRepository.findAll();
+
+	}
+
+	/**
+	 * getAllProdcts method fetches all the products with paging
+	 * 
+	 * @param not applicable
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public Page getAllProdcts(org.springframework.data.domain.Pageable pageable) {
+		log.debug("FrOM IMPL SERVIECE");
+		return productRepository.findAll(pageable);
+	}
+
+	/**
+	 * updateProduct method is used to update product details
+	 * 
+	 * @param Product
+	 */
+	@Override
+	public Product updateProduct(Product product) {
+		log.info("ProductServiceIMPL : updateProduct execution starts");
+
+		Product existingProduct = (Product) productRepository.findById(product.getId())
+				.orElseThrow(() -> new NoProductFoundException("Product Not found with Id :" + product.getId()));
+		existingProduct.setName(product.getName());
+		existingProduct.setPrice(product.getPrice());
+		existingProduct.setCategory(product.getCategory());
+		existingProduct.setQuantity(product.getQuantity());
+		Product updatedProduct = productRepository.save(existingProduct);
+		log.info("ProductServiceIMPL : getAllProdcts execution ends");
+
+		return updatedProduct;
+	}
+
+	/**
+	 * deleteProduct method is to delete a product which is soft delete
+	 * 
+	 * @param Long product id
+	 */
+
+	@Override
+	@Transactional
+	public void deleteProduct(Long id) {
+		log.info("ProductServiceIMPL : deleteProduct execution starts");
+
+		Product product = productRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+		product.setDeleted(true);
+		log.info("ProductServiceIMPL : deleteProduct execution ends");
+
+		productRepository.save(product);
+	}
+
+	/**
+	 * deleteProductHard method is to delete a product which is hard delete
+	 * 
+	 * @param Long product id
+	 */
+	@Override
+	public void deleteProductHard(Long id) {
+
+		productRepository.delete(getProductbyId(id));
+
+	}
+
+	@Override
+	public Product getProductsByCategory(String category) {
+		return productRepository.findByCategory(category);
+	}
+
+	@Override
+	public Product getProductsByPrice(Double price) {
+		return productRepository.findByPrice(price);
+	}
+
+	@Override
+	public List<ProductDTO> getProductByName(String name) {
+
+		List<ProductDTO> listOfProductDTO = Collections.emptyList();
+		log.info("NAME : {}", name);
+		List<Product> listOfProduct = productRepository.findByNameAndDeletedFalse(name);
+		if (!listOfProduct.isEmpty()) {
+			listOfProductDTO = listOfProduct.stream().map(productMapper::productToProductDTO).toList();
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No P Found With : " + name);
+		}
+		listOfProduct.forEach(product -> log.info(" ID : " + product.getId()));
+		return listOfProductDTO;
+	}
+
+	/**
+	 * Method partialUpdateProduct is to update a product partially
+	 * 
+	 * @param Long product id
+	 */
+	@Override
+	public ProductDTO partialUpdateProduct(Long id, ProductDTO productDTO) {
+		Product existingProduct = productRepository.findById(id)
+				.orElseThrow(() -> new NoProductFoundException("No product found with Id : " + productDTO.getId()));
+
+		if (productDTO.getName() != null) {
+			existingProduct.setName(productDTO.getName());
+		}
+		if (productDTO.getPrice() != null) {
+			existingProduct.setPrice(productDTO.getPrice());
+		}
+		if (productDTO.getCategory() != null) {
+			existingProduct.setCategory(productDTO.getCategory());
+		}
+		if (productDTO.getQuantity() != null) {
+			existingProduct.setQuantity(productDTO.getQuantity());
+		}
+
+		Product updatedProduct = productRepository.save(existingProduct);
+
+		return productMapper.productToProductDTO(updatedProduct);
+	}
+
+	@Override
+	public Optional<Product> findById(Long id) {
+		return productRepository.findById(id);
+
+	}
+
+	public Page<Product> findProductWithsameName(String name, Pageable pageable) {
+
+		Page<Product> page = productRepository.findProductWithsameName(name, pageable);
+
+		return page;
+	}
+	
+	@Override
+	public List getAllProductsAndQuantityisNull(){
+		
+		List list = productRepository.getAllProductsAndQuantityisNull();
+		log.info("LIST : " +list );
+		return list ;
+		
+		
+	}
+
+	
+	@Override
+	public List<ProductDTO> findByNameIgnoreCase(String name){
+		
+		List<Product> list = productRepository.findByNameIgnoreCase(name) ;
+		
+		List<ProductDTO> listDTO = null ;
+		
+		for(int i=0;i<=list.size();i++) {
+		
+			listDTO.add(productMapper.productToProductDTO(list.get(i)));
+			
+			log.info("LIST : " +list);
+		}
+		return listDTO;
+	}
+
+	
+	
+	
+	
+	
+}

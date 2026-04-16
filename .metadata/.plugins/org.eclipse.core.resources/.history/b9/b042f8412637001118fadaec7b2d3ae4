@@ -1,0 +1,51 @@
+package com.io.service;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.io.entity.Product;
+import com.io.entity.ProductDTO;
+
+/**
+ * This interface is for product service
+ * 
+ * @author Shekar
+ */
+
+public interface ProductService {
+
+	public List<Product> getAllProdcts();
+
+	public Product updateProduct(Product product);
+
+	public Product createProduct(Product product);
+
+	public void deleteProduct(Long id);
+
+	public Product getProductbyId(Long id);
+
+	public void deleteProductHard(Long id);
+
+	public Page<Product> getAllProdcts(Pageable pageable);
+
+	public Product getProductsByCategory(String category);
+
+	public Product getProductsByPrice(Double price);
+
+	public ProductDTO partialUpdateProduct(Long id, ProductDTO productDTO);
+
+	public List<ProductDTO> getProductByName(String name);
+
+	public Optional<Product> findById(Long id);
+
+	public Page<Product> findProductWithsameName(String name, Pageable pageable);
+	
+	public List getAllProductsAndQuantityisNull();
+	
+	List<ProductDTO> findByNameIgnoreCase(String name);
+
+
+}

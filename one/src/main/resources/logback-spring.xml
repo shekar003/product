@@ -1,0 +1,77 @@
+<configuration debug="false">
+
+	<!-- CONSOLE -->
+	<appender name="CONSOLE"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<!-- SERVICE LOG -->
+	<appender name="SERVICE_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/service/service.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg%n</pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/service/service-%d{yyyy-MM-dd_HH-mm}.log
+			</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+
+	<!-- CONTROLLER LOG -->
+	<appender name="CONTROLLER_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/controller/controller.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg%n</pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/controller/controller-%d{yyyy-MM-dd_HH-mm}.log
+			</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+	<!-- DAO LOG -->
+	<appender name="DAO_FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>logs/dao/dao.log</file>
+		<encoder>
+			<pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger - %msg%n</pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>logs/dao/dao-%d{yyyy-MM-dd_HH-mm}.log
+			</fileNamePattern>
+		</rollingPolicy>
+	</appender>
+
+	<!-- SERVICE PACKAGE -->
+	<logger name="com.io.service" level="DEBUG" additivity="false">
+		<appender-ref ref="SERVICE_FILE" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<!-- CONTROLLER PACKAGE -->
+	<logger name="com.io.controllers" level="DEBUG"
+		additivity="false">
+		<appender-ref ref="CONTROLLER_FILE" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<!-- DAO PACKAGE -->
+	<logger name="com.io.dao" level="DEBUG" additivity="false">
+		<appender-ref ref="DAO_FILE" />
+		<appender-ref ref="CONSOLE" />
+	</logger>
+
+	<!-- ROOT (OTHERS) -->
+	<root level="INFO">
+		<appender-ref ref="CONSOLE" />
+	</root>
+
+</configuration>
